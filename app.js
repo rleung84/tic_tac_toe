@@ -24,10 +24,6 @@ const Player = (name, marker) => {
 }
 
 const displayController = (() => {
-    p1 = Player("Player 1", "X")
-    p2 = Player("Player 2", "O")
-    let activePlayer = p2
-
 
     const updateBoard = () => {
         const board = document.querySelector('.board')
@@ -37,7 +33,7 @@ const displayController = (() => {
             box.classList.add('box')
             box.id = `box-${i}`
             box.innerText = gameBoard.boardContents[i]
-            box.addEventListener('click', displayController.updateContents)
+            box.addEventListener('click', updateContents)
             board.appendChild(box)
 
         }
@@ -49,7 +45,7 @@ const displayController = (() => {
         // console.log(e.target.innerText)
         if (e.target.innerText != p1.marker && e.target.innerText != p2.marker) {
             gameBoard.boardContents[boxId] = activePlayer.marker
-            displayController.updateBoard()
+            updateBoard()
             updateAction()
         }
     }
@@ -64,7 +60,7 @@ const displayController = (() => {
 
             next.innerText = `${activePlayer.name} has won!`
             boxes.forEach((box) => {
-                box.removeEventListener('click', displayController.updateContents)
+                box.removeEventListener('click', updateContents)
             });
 
 
@@ -74,30 +70,73 @@ const displayController = (() => {
 
             next.innerText = `There has been a tie.`
             boxes.forEach((box) => {
-                box.removeEventListener('click', displayController.updateContents)
+                box.removeEventListener('click', updateContents)
             });
 
 
 
         }
         else {
+
             activePlayer == p1 ? activePlayer = p2 : activePlayer = p1
-
-
             next.innerText = `${activePlayer.name} select your move.`
+
 
         }
         action.appendChild(next)
     }
 
+
+    const clearContents = () => {
+        location.reload()
+    }
+
+    const initialize = () => {
+        const header = document.querySelector('.header')
+        const div = document.createElement('div')
+        div.classList.add('game-buttons')
+        const start = document.createElement('button')
+        start.innerText = 'Start'
+        start.addEventListener('click', createUsers)
+        const restart = document.createElement('button')
+        restart.innerText = 'Restart'
+        restart.addEventListener('click', clearContents)
+        div.appendChild(start)
+        div.appendChild(restart)
+        header.appendChild(div)
+
+        const action = document.querySelector('.action')
+        action.replaceChildren()
+        const next = document.createElement('div')
+        next.classList.add('action-next')
+        next.innerText = `Click start to begin.`
+        action.appendChild(next)
+    }
+    const createUsers = () => {
+        username = window.prompt('Player 1 please enter your name.')
+        marker = window.prompt(`${username} please select a marker`)
+        p1 = Player(username, marker)
+        username = window.prompt('Player 2 please enter your name.')
+        marker = window.prompt(`${username} please select a marker`)
+        p2 = Player(username, marker)
+        activePlayer = p1
+        const action = document.querySelector('.action')
+        action.replaceChildren()
+        const next = document.createElement('div')
+        next.classList.add('action-next')
+        next.innerText = `${activePlayer.name} select your move.`
+        action.appendChild(next)
+        console.log('Initialized')
+    }
+
     const play = () => {
-        updateAction()
+        initialize()
         updateBoard()
     }
 
 
 
-    return { play, updateContents, updateBoard }
+    return { play, updateContents, updateBoard, clearContents, initialize }
 })();
 
 
